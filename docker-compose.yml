@@ -2,7 +2,7 @@ version: '2'
 
 services:
   db:
-    image: mysql:5.7
+    image: mariadb:10.1
     volumes:
       - ./db_data:/var/lib/mysql
       #  restart: always
@@ -26,7 +26,7 @@ services:
   wordpress_data:
     image: busybox
     volumes:
-      - /var/www/html
+      - ./wp_data:/var/www/html
 
   nginx:
     ports:
