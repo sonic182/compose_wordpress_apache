@@ -1,16 +1,18 @@
-version: '2'
+version: '2.1'
 
 services:
   db:
     image: mariadb:10.1
     volumes:
       - ./db_data:/var/lib/mysql
-      #  restart: always
+    # restart: always
     environment:
       MYSQL_ROOT_PASSWORD: wordpress
       MYSQL_DATABASE: wordpress
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
+    networks:
+      - wordpress_net
 
   wordpress:
     depends_on:
@@ -22,15 +24,34 @@ services:
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_PASSWORD: wordpress
+    networks:
+      - wordpress_net
 
   wordpress_data:
     image: busybox
+    # restart: always
     volumes:
       - ./wp_data:/var/www/html
+    networks:
+      - wordpress_net
 
   nginx:
-    ports:
-      - "8000:80"
     build: ./compose/nginx/
     volumes_from:
       - wordpress_data
+    networks:
+      wordpress_net:
+        ipv4_address: 172.16.238.10
+        # ipv6_address: 2001:3984:3989::10
+
+networks:
+  wordpress_net:
+    # driver: bridge
+    # enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+      -
+        subnet: 172.16.238.0/24
+      # -
+      #   subnet: 2001:3984:3989::/64
