@@ -1,10 +1,8 @@
-version: '2.1'
+version: '3.3'
 
 services:
   db:
-    image: mariadb:10
-    volumes:
-      - ./db_data:/var/lib/mysql
+    image: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: wordpress
       MYSQL_DATABASE: wordpress
@@ -17,44 +15,19 @@ services:
     depends_on:
       - db
     build: .
-    volumes_from:
-      - wordpress_data
+    ports:
+      - 3000:80
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_PASSWORD: wordpress
     networks:
       - wordpress_net
 
-  wordpress_data:
-    image: busybox
-    volumes:
-      - ./wp_data:/var/www/html
+  redis:
+    image: redis:alpine
     networks:
       - wordpress_net
 
-  memcached:
-    image: memcached:alpine
-    networks:
-      - wordpress_net
-
-  # redis:
-  #   image: redis:alpine
-  #   networks:
-  #     - wordpress_net
-
-
-  nginx:
-    build: ./compose/nginx/
-    volumes_from:
-      - wordpress_data
-    networks:
-      - wordpress_net
-    ports:
-      - 3000:80
-    depends_on:
-      - wordpress
-      # wordpress_net:
-      #   ipv4_address: 172.16.238.10
 
 networks:
   wordpress_net:
@@ -62,4 +35,4 @@ networks:
       driver: default
       config:
       -
-        subnet: 172.16.238.0/24
+        subnet: 172.16.238.0/26
