@@ -2,37 +2,24 @@ version: '3.3'
 
 services:
   db:
-    image: mariadb
+    image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: wordpress
       MYSQL_DATABASE: wordpress
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
-    networks:
-      - wordpress_net
 
   wordpress:
     depends_on:
       - db
     build: .
     ports:
-      - 3000:80
+      - 3002:80
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_PASSWORD: wordpress
-    networks:
-      - wordpress_net
 
   redis:
     image: redis:alpine
-    networks:
-      - wordpress_net
 
 
-networks:
-  wordpress_net:
-    ipam:
-      driver: default
-      config:
-      -
-        subnet: 172.16.238.0/26
