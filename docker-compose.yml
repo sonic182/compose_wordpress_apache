@@ -23,3 +23,7 @@ services:
     image: redis:alpine
 
 
+networks:
+  default:
+    external:
+      name: apps
